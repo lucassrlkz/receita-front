@@ -9,25 +9,21 @@ export function CnaeFormRoot() {
   const handleCnaeSelect = (cnae: string) => {
     setSelectedCnae(cnae);
   };
+  
+  const handleResetCnae = () => {
+    setSelectedCnae('');
+  };
 
   const handleFilterSubmit = (filters: CnaeFiltersFormData) => {
-    // 'use server'
-    //   try {
-    //     // Process form data
-    //     console.log(data);
+      try {
+        // Process form data
+        console.log("Formulário enviado com sucesso!\n");
         
-    //     // Optional: show success toast
-    //     console.log("Formulário enviado com sucesso!");
-    //   } catch (error) {
-    //     // Optional: show error toast
-    //     console.error("Erro ao enviar formulário", error);
-    //   }
-    
-    // This is where you would typically send the data to an API or process it
-    console.log('Submitted Filters:', filters);
-    
-    // Example: You might want to call an API here
-    // await submitFilters(filters);
+        console.log('Submitted Filters:', filters);
+      } catch (error) {
+        
+        console.error("Erro ao enviar formulário", error);
+      }
   };
 
   return (
@@ -38,6 +34,7 @@ export function CnaeFormRoot() {
         <CnaeFilters 
           selectedCnae={selectedCnae} 
           onSubmit={handleFilterSubmit} 
+          onResetCnae={handleResetCnae}
         />
       )}
     </div>

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 import {
   Form,
   FormControl,
@@ -14,17 +14,22 @@ import {
 } from "@/components/ui/form";
 
 import { cnaeSchema, CnaeFormData } from "./cnaeZodSchema";
-import * as cnaeData from '../../utils/cnaeJson.json';
+import cnaeData from '../../utils/cnae.json';
+import { useState } from "react";
+import {CnaeOptionsProps} from "./types/form.types";
 
 
 // CNAE options
-const cnaeOptions = cnaeData as {id:string, description:string}[];
+const cnaeOptions = cnaeData as CnaeOptionsProps[];
 
 interface CnaeSelectorProps {
   onSelectCnae: (cnae: string) => void;
 }
 
 export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
+  const [open, setOpen] = useState(false);
+  
+  
   // Initialize the form with react-hook-form and Zod
   const form = useForm<CnaeFormData>({
     resolver: zodResolver(cnaeSchema),
@@ -33,10 +38,14 @@ export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
     }
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Handle form submission
   const handleSubmit = (data: CnaeFormData) => {
+    setIsSubmitting(true);
     onSelectCnae(data.cnae);
     console.log("cnae:",data.cnae);
+    setIsSubmitting(false);
   };
 
   return (
@@ -51,13 +60,58 @@ export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
           </h2>
   
           {/* CNAE Field with Datalist */}
-          <FormField
+          {<FormField
             control={form.control}
             name="cnae"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>CNAE</FormLabel>
-                <Popover>
+                    <FormControl>
+                      <Input 
+                        placeholder="Selecione ou digite o CNAE" 
+                        list="cnae-options"
+                        {...field} 
+                      />
+                    </FormControl>
+                  
+                  {/* <div className="w-full max-h-60 overflow-y-auto">
+                    <div className="grid gap-2">
+                      {cnaeOptions.map((option) => (
+                        <div 
+                          key={option.id} 
+                          className="flex justify-between hover:bg-gray-100 p-2 cursor-pointer"
+                          onClick={() => {
+                            form.setValue('cnae', option.id);setOpen(false);
+                          }}
+                        >
+                          <span className="text-gray-600 text-sm">{option.description}</span>
+                          <span className="font-medium">{option.id}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div> */}
+                
+                {/* Hidden datalist for browser autocomplete support */}
+                <datalist id="cnae-options">
+                  {cnaeOptions.map((option) => (
+                    <option onClick={()=> form.setValue('cnae', option.id)} key={option.id} value={option.id}>
+                      {option.description}
+                    </option>
+                  ))}
+                </datalist>
+                
+                <FormMessage />
+              </FormItem>
+            )}
+          />}
+  
+          {/* {<FormField
+            control={form.control}
+            name="cnae"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>CNAE</FormLabel>
+                <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Input 
@@ -74,7 +128,7 @@ export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
                           key={option.id} 
                           className="flex justify-between hover:bg-gray-100 p-2 cursor-pointer"
                           onClick={() => {
-                            form.setValue('cnae', option.id);
+                            form.setValue('cnae', option.id);setOpen(false);
                           }}
                         >
                           <span className="text-gray-600 text-sm">{option.description}</span>
@@ -83,10 +137,10 @@ export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
                       ))}
                     </div>
                   </PopoverContent>
-                </Popover>
+                </Popover> */}
                 
                 {/* Hidden datalist for browser autocomplete support */}
-                <datalist id="cnae-options">
+                {/* <datalist id="cnae-options">
                   {cnaeOptions.map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.description}
@@ -95,15 +149,16 @@ export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
                 </datalist>
                 
                 <FormMessage />
-              </FormItem>
-            )}
-          />
+              </FormItem> */}
+            {/* )}
+          />} */}
   
           <Button 
             type="submit" 
             className="w-full"
+            disabled={isSubmitting}
           >
-            Pesquisar CNAE
+            {isSubmitting ? 'Pesquisando...' : 'Pesquisar CNAE'}
           </Button>
         </form>
       </Form>
