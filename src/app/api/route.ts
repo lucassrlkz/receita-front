@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import sql from '@/database/dbConnection'
 
 export async function GET() {
   return NextResponse.json(generateFakeData());

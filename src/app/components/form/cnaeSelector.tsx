@@ -1,9 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import {
   Form,
   FormControl,
@@ -12,23 +10,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import { cnaeSchema, CnaeFormData } from "./cnaeZodSchema";
-import cnaeData from '../../../utils/cnae.json';
 import { useState } from "react";
 import {CnaeOptionsProps} from "./types/form.types";
 
-
-// CNAE options
-const cnaeOptions = cnaeData as CnaeOptionsProps[];
+import cnaeData from '../../../utils/cnae.json';
 
 interface CnaeSelectorProps {
   onSelectCnae: (cnae: string) => void;
 }
 
+// CNAE options
+const cnaeOptions = cnaeData as CnaeOptionsProps[];
+
 export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
-  const [open, setOpen] = useState(false);
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Initialize the form with react-hook-form and Zod
   const form = useForm<CnaeFormData>({
@@ -38,13 +34,11 @@ export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
     }
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   // Handle form submission
-  const handleSubmit = (data: CnaeFormData) => {
+  function handleSubmit(data: CnaeFormData){
     setIsSubmitting(true);
     onSelectCnae(data.cnae);
-    console.log("cnae:",data.cnae);
+    // console.log("cnae:",data.cnae);
     setIsSubmitting(false);
   };
 
