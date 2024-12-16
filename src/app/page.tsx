@@ -1,5 +1,5 @@
 'use client'
-import {CnaeFormRoot} from '../components/form/cnaeFormRoot'
+import {CnaeFormRoot} from './components/form/cnaeFormRoot'
 
 export default function Home() {
 

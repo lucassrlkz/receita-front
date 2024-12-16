@@ -1,4 +1,4 @@
-import { useState} from 'react';
+import { useEffect, useState} from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cnaeFiltersSchema, CnaeFiltersFormData } from "./cnaeZodSchema";
 
@@ -16,15 +16,16 @@ import {
 } from "@/components/ui/form";
 import {Popover,PopoverTrigger, PopoverContent} from "@/components/ui/popover";
 
-import stateData from "../../utils/estado.json";
-import cityData from "../../utils/cidade.json";
-import estadosCidades from "../../utils/estados-cidades.json";
-import type {StateProps, CityProps, CityByStateProps} from "./types/form.types";
+import stateData from "../../../utils/estado.json";
+import cityData from "../../../utils/cidade.json";
+import estadosCidades from "../../../utils/estados-cidades.json";
+import type {StateProps, CityProps, CityByStateProps, TableDataProps} from "./types/form.types";
 
 interface CnaeFiltersProps {
   selectedCnae: string;
   onSubmit: (data: CnaeFiltersFormData) => void;
   onResetCnae: () => void;
+  tableData: TableDataProps[];
 }
 
 // read data from file using types
@@ -32,10 +33,10 @@ const stateOptions: StateProps[] = stateData.UF;
 const cityOptions: CityProps[] = cityData;
 const cityByState: CityByStateProps = estadosCidades
 
-export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae }: CnaeFiltersProps) {
+export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: CnaeFiltersProps) {
   const [openState, setOpenState] = useState(false);
   const [state, setState] = useState('');
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(true);
 
   // Initialize the form with react-hook-form and Zod
   const form = useForm<CnaeFiltersFormData>({
@@ -52,18 +53,19 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae }: CnaeFilters
   const handleSubmit = (data: CnaeFiltersFormData) => {
     onSubmit(data);
   };
-
   return (
-    <div className="flex min-h-screen">
-      {/* Toggle Button */}
-      <button
-        onClick={() => setIsFormOpen(!isFormOpen)}
-        className="fixed top-6 left-6 z-50 p-2 bg-slate-900 text-white rounded-md"
-      >
-        {isFormOpen ? "✕" : "FILTROS"}
-      </button>
+    <div className="grid grid-cols-12 min-h-screen">
+      {/* Toggle Button - Column 1 */}
+      <div className="col-span-1">
+        <button
+          onClick={() => setIsFormOpen(!isFormOpen)}
+          className="fixed top-6 left-6 z-50 p-2 bg-slate-900 text-white rounded-md"
+        >
+          {isFormOpen ? "✕" : "FILTROS"}
+        </button>
+      </div>
 
-      {/* Sliding Panel */}
+      {/* Sliding Panel - Overlays when open */}
       <aside 
         className={`fixed top-0 left-0 h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
         ${isFormOpen ? 'translate-x-0' : '-translate-x-full'}`}
@@ -99,7 +101,7 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae }: CnaeFilters
                         <div className="grid gap-2">
                           {stateOptions.map((option) => (
                             <div 
-                            key={option.sigla} 
+                            key={`state-${option.sigla}`} 
                             className="flex justify-between hover:bg-gray-100 p-2 cursor-pointer"
                             onClick={() => {
                               form.setValue('estado', option.sigla); setState(option.sigla);setOpenState(false);
@@ -112,15 +114,6 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae }: CnaeFilters
                         </div>
                       </PopoverContent>
                     </Popover>
-                
-                    {/* Hidden datalist for browser autocomplete support */}
-                    <datalist id="state-options">
-                      {stateOptions.map((option) => (
-                        <option key={option.sigla} value={option.sigla}>
-                          {option.nome}
-                        </option>
-                      ))}
-                    </datalist>
                 
                     <FormMessage />
                   </FormItem>
@@ -144,7 +137,7 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae }: CnaeFilters
                     {state ? (
                       <datalist id="city-options">
                         {cityByState.estados.find(estado => estado.sigla === state)?.cities.map((city: { id: string; nome: string }) => (
-                          <option key={city.id} value={city.id}>
+                          <option key={`state-${city.id}`} value={city.id}>
                             {city.nome}
                           </option>
                         ))}
@@ -152,7 +145,7 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae }: CnaeFilters
                     ) : (
                       <datalist id="city-options">
                         {cityOptions.map((option) => (
-                          <option  key={option.id} value={option.id}>
+                          <option key={`all-cities-${option.id}`} value={option.id}>
                             {option.description}
                           </option>
                         ))}
@@ -217,8 +210,8 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae }: CnaeFilters
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-4">
+      {/* Main Content - Column 2-12 */}
+      <main className="col-span-11 p-4">
         <div id="table" className="bg-white shadow-md rounded-lg p-6">
           <table className="w-full">
             <thead>
@@ -229,8 +222,21 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae }: CnaeFilters
                 <th className="text-right p-2">Capital Social</th>
               </tr>
             </thead>
+            
             <tbody>
-              {/* Table data rows */}
+              {Array.isArray(tableData) && tableData.map((row) => (
+                <tr key={row.id} className="border-b hover:bg-gray-50">
+                  <td className="p-2">{row.cnae}</td>
+                  <td className="p-2">{row.estado}</td>
+                  <td className="p-2">{row.cidade}</td>
+                  <td className="p-2 text-right">
+                    {new Intl.NumberFormat('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL'
+                    }).format(row.capitalSocial)}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

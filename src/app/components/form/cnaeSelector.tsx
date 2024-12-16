@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 
 import { cnaeSchema, CnaeFormData } from "./cnaeZodSchema";
-import cnaeData from '../../utils/cnae.json';
+import cnaeData from '../../../utils/cnae.json';
 import { useState } from "react";
 import {CnaeOptionsProps} from "./types/form.types";
 
@@ -104,54 +104,6 @@ export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
               </FormItem>
             )}
           />}
-  
-          {/* {<FormField
-            control={form.control}
-            name="cnae"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>CNAE</FormLabel>
-                <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Input 
-                        placeholder="Selecione ou digite o CNAE" 
-                        list="cnae-options"
-                        {...field} 
-                      />
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-full max-h-60 overflow-y-auto">
-                    <div className="grid gap-2">
-                      {cnaeOptions.map((option) => (
-                        <div 
-                          key={option.id} 
-                          className="flex justify-between hover:bg-gray-100 p-2 cursor-pointer"
-                          onClick={() => {
-                            form.setValue('cnae', option.id);setOpen(false);
-                          }}
-                        >
-                          <span className="text-gray-600 text-sm">{option.description}</span>
-                          <span className="font-medium">{option.id}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover> */}
-                
-                {/* Hidden datalist for browser autocomplete support */}
-                {/* <datalist id="cnae-options">
-                  {cnaeOptions.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.description}
-                    </option>
-                  ))}
-                </datalist>
-                
-                <FormMessage />
-              </FormItem> */}
-            {/* )}
-          />} */}
   
           <Button 
             type="submit" 

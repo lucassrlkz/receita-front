@@ -7,10 +7,12 @@ export type StateProps = {
   nome: string;
   sigla: string;
 }
+
 export type CityProps = {
   id: string;
   description: string;
 }
+
 export type CityByStateProps = {
   estados:{
     sigla: string;
@@ -19,4 +21,12 @@ export type CityByStateProps = {
       nome:string;
     }[]
   }[]
+}
+
+export interface TableDataProps {
+  id: string;
+  cnae: string;
+  estado: string;
+  cidade: string;
+  capitalSocial: number;
 }
