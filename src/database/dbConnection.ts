@@ -2,7 +2,7 @@ import postgres from 'postgres'
 
 let sql;
 try{
-  const sql = postgres({
+  sql = postgres({
     host: process.env.HOST,
     port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5432,
     database: process.env.DATABASE,
