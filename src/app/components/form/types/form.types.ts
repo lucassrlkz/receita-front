@@ -28,5 +28,4 @@ export interface TableDataProps {
   cnae: string;
   estado: string;
   cidade: string;
-  capitalSocial: number;
 }

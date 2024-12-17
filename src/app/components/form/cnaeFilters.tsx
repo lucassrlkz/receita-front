@@ -19,13 +19,13 @@ import {Popover,PopoverTrigger, PopoverContent} from "@/components/ui/popover";
 import stateData from "../../../utils/estado.json";
 import cityData from "../../../utils/cidade.json";
 import estadosCidades from "../../../utils/estados-cidades.json";
-import type {StateProps, CityProps, CityByStateProps, TableDataProps} from "./types/form.types";
+import type {StateProps, CityProps, CityByStateProps} from "./types/form.types";
 
 interface CnaeFiltersProps {
   selectedCnae: string;
   onSubmit: (data: CnaeFiltersFormData) => void;
   onResetCnae: () => void;
-  tableData: TableDataProps[];
+  tableData: String[];
 }
 
 // read data from file using types
@@ -45,7 +45,6 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: C
       cnae: selectedCnae,
       estado: "",
       cidade: "",
-      capitalSocial: 0
     }
   });
 
@@ -137,7 +136,7 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: C
                     {state ? (
                       <datalist id="city-options">
                         {cityByState.estados.find(estado => estado.sigla === state)?.cities.map((city: { id: string; nome: string }) => (
-                          <option key={`state-${city.id}`} value={city.id}>
+                          <option key={`${state}-${city.id}-${city.nome}`} value={city.id}>
                             {city.nome}
                           </option>
                         ))}
@@ -156,32 +155,12 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: C
                 )}
               />
 
-              {/* Capital Social Field */}
-              <FormField
-                control={form.control}
-                name="capitalSocial"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Capital Social</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        placeholder="Digite o capital social"
-                        {...field}
-                        onChange={event => field.onChange(event.target.valueAsNumber || '')}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-                />
-
               <Button 
                 type="submit" 
                 className="w-full"
                 onClick={()=> setIsFormOpen(!isFormOpen)}
               >
-                Aplicar Filtros
+                Pesquisar
               </Button>
               <Button 
                 type="button"
@@ -191,8 +170,7 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: C
                   form.reset({
                     cnae: selectedCnae,
                     estado: "",
-                    cidade: "",
-                    capitalSocial: 0
+                    cidade: ""
                   });
                   setState('');
                 }}
@@ -216,27 +194,37 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: C
           <table className="w-full">
             <thead>
               <tr className="border-b">
+                <th className="text-left p-2">CNPJ</th>
+                <th className="text-left p-2">Razão Social</th>
                 <th className="text-left p-2">CNAE</th>
-                <th className="text-left p-2">Estado</th>
-                <th className="text-left p-2">Cidade</th>
+                <th className="text-left p-2">UF</th>
+                <th className="text-left p-2">Município</th>
                 <th className="text-right p-2">Capital Social</th>
+                <th className="text-left p-2">Situação</th>
+                <th className="text-left p-2">Matriz/Filial</th>
               </tr>
             </thead>
-            
             <tbody>
-              {Array.isArray(tableData) && tableData.map((row) => (
-                <tr key={row.id} className="border-b hover:bg-gray-50">
-                  <td className="p-2">{row.cnae}</td>
-                  <td className="p-2">{row.estado}</td>
-                  <td className="p-2">{row.cidade}</td>
-                  <td className="p-2 text-right">
-                    {new Intl.NumberFormat('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL'
-                    }).format(row.capitalSocial)}
+              {tableData && Array.isArray(tableData) && tableData.length > 0 ? (
+                tableData.map((row:any, index:number) => (
+                  <tr key={index} className="border-b hover:bg-gray-50">
+                    <td className="p-2">{`${row.cnpj_basico}/${row.cnpj_ordem}-${row.cnpj_dv}`}</td>
+                    <td className="p-2">{row.razao_social}</td>
+                    <td className="p-2">{row.cnae_fiscal_}</td>
+                    <td className="p-2">{row.uf}</td>
+                    <td className="p-2">{row.municipio}</td>
+                    <td className="p-2">{row.capital_social}</td>
+                    <td className="p-2">{row.situacao_cadastral}</td>
+                    <td className="p-2">{row.matriz_filial}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="text-center p-4 text-gray-500">
+                    Nenhum resultado encontrado
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

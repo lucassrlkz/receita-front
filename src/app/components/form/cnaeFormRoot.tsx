@@ -9,19 +9,20 @@ export function CnaeFormRoot() {
   const [selectedCnae, setSelectedCnae] = useState('');
   
   // Add state for table data
-  const [tableData, setTableData] = useState<TableDataProps[]>([]);
+  const [tableData, setTableData] = useState([]);
 
-  const handleCnaeSelect = (cnae: string) => {
+  function handleCnaeSelect(cnae: string) {
     setSelectedCnae(cnae);
   };
   
-  const handleResetCnae = () => {
+  function handleResetCnae() {
     setSelectedCnae('');
   };
 
   const handleFilterSubmit = async (filters: CnaeFiltersFormData) => {
-    console.log("Filters:", filters); 
+    console.log("Filters submitted:", filters);
     try {
+      // const response = await fetch('/api')
       const response = await fetch('/api', {
         method: 'POST',
         headers: {
@@ -30,10 +31,13 @@ export function CnaeFormRoot() {
         body: JSON.stringify(filters),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
-
-     setTableData(data.results);
-
+      console.log("front-end Data:", data);
+      setTableData(data.results);
     } catch (error) {
       console.error("Error submitting form:", error);
     }

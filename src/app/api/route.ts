@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import sql from '@/database/dbConnection'
+import sql from '@/database/dbConnection';
+import { estabelecimentoQuery} from '@/database/queries';
 
 export async function GET() {
   return NextResponse.json(generateFakeData());
@@ -7,10 +8,17 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const filters = await request.json();
-  console.log("api filters", filters);
-  return NextResponse.json(generateFakeData());
-}
+  const response = await estabelecimentoQuery(filters.cnae, filters.estado, filters.cidade);
+ 
+  const results ={
+    results:response
+  }
 
+  console.log("database response", results);
+  // const data = JSON.stringify(response);
+
+  return NextResponse.json(results);
+}
 function generateFakeData() {
   return {
     results: [

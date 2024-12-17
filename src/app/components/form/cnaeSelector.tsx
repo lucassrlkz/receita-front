@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cnaeSchema, CnaeFormData } from "./cnaeZodSchema";
-import { useState } from "react";
 import {CnaeOptionsProps} from "./types/form.types";
 
 import cnaeData from '../../../utils/cnae.json';
@@ -24,7 +23,6 @@ interface CnaeSelectorProps {
 const cnaeOptions = cnaeData as CnaeOptionsProps[];
 
 export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Initialize the form with react-hook-form and Zod
   const form = useForm<CnaeFormData>({
@@ -36,10 +34,7 @@ export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
 
   // Handle form submission
   function handleSubmit(data: CnaeFormData){
-    setIsSubmitting(true);
     onSelectCnae(data.cnae);
-    // console.log("cnae:",data.cnae);
-    setIsSubmitting(false);
   };
 
   return (
@@ -102,9 +97,8 @@ export function CnaeSelector({ onSelectCnae }: CnaeSelectorProps) {
           <Button 
             type="submit" 
             className="w-full"
-            disabled={isSubmitting}
           >
-            {isSubmitting ? 'Pesquisando...' : 'Pesquisar CNAE'}
+            Selecionar CNAE
           </Button>
         </form>
       </Form>
