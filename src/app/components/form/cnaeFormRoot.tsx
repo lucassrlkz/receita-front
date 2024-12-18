@@ -2,12 +2,21 @@ import React, { useState } from 'react';
 import { CnaeSelector } from './cnaeSelector';
 import { CnaeFilters } from './cnaeFilters';
 import { CnaeFiltersFormData } from './cnaeZodSchema';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+
 
 export function CnaeFormRoot() {
-  const [selectedCnae, setSelectedCnae] = useState('');
-  
+  const router = useRouter();
+
+  const [selectedCnae, setSelectedCnae] = useState('');  
   // Add state for table data
   const [tableData, setTableData] = useState([]);
+  
+  function handleLogout(){
+      sessionStorage.setItem('isAuthenticated', 'false');
+      router.push('/');
+  }
 
   function handleCnaeSelect(cnae: string) {
     setSelectedCnae(cnae);
@@ -18,8 +27,6 @@ export function CnaeFormRoot() {
   };
 
   const handleFilterSubmit = async (filters: CnaeFiltersFormData) => {
-    console.log("Filters submitted:", filters);
-    
       // const response = await fetch('/api')
       const response = await fetch('/api', {
         method: 'POST',
@@ -32,20 +39,28 @@ export function CnaeFormRoot() {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
-      console.log("front-end Data:", data);
       setTableData(data.results);
   };
  
   return (
     <div className="container mx-auto p-4 space-y-4">
       {!selectedCnae ? (
-        <CnaeSelector onSelectCnae={handleCnaeSelect} />
+        <>
+          <Button
+            onClick={handleLogout}
+            className="fixed top-6 right-6 z-50 bg-red-600 hover:bg-red-700 text-white"
+            >
+            Logout
+          </Button>
+          <CnaeSelector onSelectCnae={handleCnaeSelect} />
+        </>
       ) : (
         <CnaeFilters 
           selectedCnae={selectedCnae} 
           onSubmit={handleFilterSubmit}
           onResetCnae={handleResetCnae}
           tableData={tableData}
+          handleLogout={handleLogout}
         />
       )}
     </div>

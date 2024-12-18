@@ -1,4 +1,4 @@
-import { useEffect, useState} from 'react';
+import {useState} from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cnaeFiltersSchema, CnaeFiltersFormData } from "./cnaeZodSchema";
 
@@ -26,6 +26,7 @@ interface CnaeFiltersProps {
   onSubmit: (data: CnaeFiltersFormData) => void;
   onResetCnae: () => void;
   tableData: String[];
+  handleLogout: () => void;
 }
 
 // read data from file using types
@@ -33,7 +34,8 @@ const stateOptions: StateProps[] = stateData.UF;
 const cityOptions: CityProps[] = cityData;
 const cityByState: CityByStateProps = estadosCidades
 
-export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: CnaeFiltersProps) {
+export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, handleLogout }: CnaeFiltersProps) {
+  
   const [openState, setOpenState] = useState(false);
   const [state, setState] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(true);
@@ -50,13 +52,21 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: C
   });
 
   // Handle form submission
-  const handleSubmit = (data: CnaeFiltersFormData) => {
+  function handleSubmit(data: CnaeFiltersFormData){
     onSubmit(data);
   };
+
   return (
     <div className="grid grid-cols-12 min-h-screen">
+      <Button
+        onClick={handleLogout}
+        className="fixed top-6 right-6 z-50 bg-red-600 hover:bg-red-700 text-white"
+      >
+        Logout
+      </Button>
+
       {/* Toggle Button - Column 1 */}
-      <div className="col-span-1">
+      <div className="col-span-1">  
         <button
           onClick={() => setIsFormOpen(!isFormOpen)}
           className="fixed top-6 left-6 z-50 p-2 bg-slate-900 text-white rounded-md"
