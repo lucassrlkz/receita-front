@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { CnaeSelector } from './cnaeSelector';
 import { CnaeFilters } from './cnaeFilters';
 import { CnaeFiltersFormData } from './cnaeZodSchema';
-import type {TableDataProps} from "./types/form.types";
-
 
 export function CnaeFormRoot() {
   const [selectedCnae, setSelectedCnae] = useState('');
@@ -21,7 +19,7 @@ export function CnaeFormRoot() {
 
   const handleFilterSubmit = async (filters: CnaeFiltersFormData) => {
     console.log("Filters submitted:", filters);
-    try {
+    
       // const response = await fetch('/api')
       const response = await fetch('/api', {
         method: 'POST',
@@ -31,20 +29,13 @@ export function CnaeFormRoot() {
         body: JSON.stringify(filters),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
       console.log("front-end Data:", data);
       setTableData(data.results);
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
   };
-
-
-  // Update the JSX to pass tableData
+ 
   return (
     <div className="container mx-auto p-4 space-y-4">
       {!selectedCnae ? (

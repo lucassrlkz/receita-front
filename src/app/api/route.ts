@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import sql from '@/database/dbConnection';
 import { estabelecimentoQuery} from '@/database/queries';
 
 export async function GET() {
@@ -7,18 +6,17 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const filters = await request.json();
-  const response = await estabelecimentoQuery(filters.cnae, filters.estado, filters.cidade);
+  const {cnae, estado, cidade} = await request.json();
+  
+  const response = await estabelecimentoQuery(cnae, estado, cidade);
  
   const results ={
     results:response
   }
 
-  console.log("database response", results);
-  // const data = JSON.stringify(response);
-
   return NextResponse.json(results);
 }
+
 function generateFakeData() {
   return {
     results: [

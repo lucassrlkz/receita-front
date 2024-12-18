@@ -2,6 +2,7 @@ import sql from "./dbConnection";
 
 export async function estabelecimentoQuery(cnae:string, estado:string, cidade:string):Promise<any> {
   const ativa ='02';
+  
   return sql`SELECT te.cnpj_basico,t.cnpj_ordem,
     t.cnpj_dv,
     te.razao_social,

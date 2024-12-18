@@ -2,7 +2,7 @@ import { z } from "zod";
 
 // CNAE Selector Schema
 export const cnaeSchema = z.object({
-  cnae: z.string().min(1, "CNAE é obrigatório").max(100, "CNAE muito longo")
+  cnae: z.string().min(1, "CNAE é obrigatório").max(80, "CNAE muito longo")
 });
 
 // CNAE Filters Schema

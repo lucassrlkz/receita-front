@@ -37,6 +37,7 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: C
   const [openState, setOpenState] = useState(false);
   const [state, setState] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(true);
+  const [isFormSubmit, setIsFormSubmit] = useState(false);
 
   // Initialize the form with react-hook-form and Zod
   const form = useForm<CnaeFiltersFormData>({
@@ -158,10 +159,19 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: C
               <Button 
                 type="submit" 
                 className="w-full"
-                onClick={()=> setIsFormOpen(!isFormOpen)}
-              >
+                onClick={() => {setIsFormOpen(!isFormOpen); setIsFormSubmit(true);}}              >
                 Pesquisar
               </Button>
+
+              <Button 
+                type="submit" 
+                className="w-full"
+                onClick={()=>{alert("exportar dados para arquivo csv"); setIsFormSubmit(false);}}
+                disabled={!isFormSubmit}
+              >
+                Exportar Arquivo CSV
+              </Button>
+              <hr />
               <Button 
                 type="button"
                 variant="outline"
@@ -177,9 +187,10 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae,tableData }: C
                 >
                 Limpar Formulário
               </Button>
+
               <Button 
-                onClick={onResetCnae} 
                 className="w-full"
+                onClick={onResetCnae} 
                 >
                 Procurar outro CNAE
               </Button>
