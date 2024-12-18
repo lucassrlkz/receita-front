@@ -94,3 +94,37 @@ export async function estabelecimentoQuery(cnae:string, estado:string, cidade:st
     LIMIT 5;
   `
 }
+
+export async function estabelecimentoQueryCount(cnae:string, estado:string, cidade:string):Promise<any> {
+  const ativa ='02';
+  
+  return sql`SELECT COUNT(t.cnpj_basico)
+
+    FROM estabelecimento t
+    LEFT JOIN empresas te on te.cnpj_basico=t.cnpj_basico
+    LEFT JOIN natureza_juridica tnat on tnat.codigo=te.natureza_juridica
+    LEFT JOIN motivo tmot on tmot.codigo=t.motivo_situacao_cadastral
+
+    LEFT JOIN matriz_filial tmf on tmf.codigo=t.matriz_filial
+    LEFT JOIN situacao_cadastral tsc on tsc.codigo=t.situacao_cadastral
+    LEFT JOIN municipio tmun on tmun.codigo=t.municipio
+
+    LEFT JOIN cnae tc on tc.codigo=t.cnae_fiscal
+    LEFT JOIN pais tpa on tpa.codigo=t.pais
+    LEFT JOIN porte_empresa tpemp on tpemp.codigo=te.porte_empresa
+
+    LEFT JOIN socios tsoc on tsoc.cnpj_basico=t.cnpj_basico
+    LEFT JOIN qualificacao_socio tq on tq.codigo=te.qualificacao_responsavel
+    LEFT JOIN qualificacao_socio tqs on tqs.codigo=tsoc.qualificacao_socio
+    LEFT JOIN qualificacao_socio tqsrl on tqsrl.codigo=tsoc.qualificacao_representante_legal
+
+    LEFT JOIN simples tsim on tsim.cnpj_basico=t.cnpj_basico
+    LEFT JOIN identificador_socio tidsoc on tidsoc.codigo=tsoc.identificador_socio
+    LEFT JOIN faixa_etaria_socio tfes on tfes.codigo=tsoc.faixa_etaria
+
+    WHERE t.cnae_fiscal=${cnae.toString()}
+      AND t.uf=${estado.toString()}
+      AND t.municipio=${cidade.toString()}
+      AND t.situacao_cadastral=${ativa.toString()};
+  `
+}

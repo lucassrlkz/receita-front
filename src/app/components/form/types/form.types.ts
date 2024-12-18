@@ -24,8 +24,6 @@ export type CityByStateProps = {
 }
 
 export interface TableDataProps {
-  id: string;
-  cnae: string;
-  estado: string;
-  cidade: string;
+  results: String[];
+  total_rows: string;
 }

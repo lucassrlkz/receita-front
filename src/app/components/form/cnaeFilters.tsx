@@ -19,13 +19,13 @@ import {Popover,PopoverTrigger, PopoverContent} from "@/components/ui/popover";
 import stateData from "../../../utils/estado.json";
 import cityData from "../../../utils/cidade.json";
 import estadosCidades from "../../../utils/estados-cidades.json";
-import type {StateProps, CityProps, CityByStateProps} from "./types/form.types";
+import type {StateProps, CityProps, CityByStateProps, TableDataProps} from "./types/form.types";
 
 interface CnaeFiltersProps {
   selectedCnae: string;
   onSubmit: (data: CnaeFiltersFormData) => void;
   onResetCnae: () => void;
-  tableData: String[];
+  tableData: TableDataProps;
   handleLogout: () => void;
 }
 
@@ -211,6 +211,16 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, ha
 
       {/* Main Content - Column 2-12 */}
       <main className="col-span-11 p-4">
+          {tableData.total_rows && parseInt(tableData.total_rows) > 0 ? (
+             <p className="text-slate-900 text-center text-sm">
+              Total de informações achadas no banco:
+            <span className="font-bold text-lg">
+              {tableData.total_rows}
+            </span>
+            </p> 
+          ):''
+          }
+                       
         <div id="table" className="bg-white shadow-md rounded-lg p-6">
           <table className="w-full">
             <thead>
@@ -226,8 +236,8 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, ha
               </tr>
             </thead>
             <tbody>
-              {tableData && Array.isArray(tableData) && tableData.length > 0 ? (
-                tableData.map((row:any, index:number) => (
+              {tableData.results && tableData.results.length > 0 ? (
+                tableData.results.map((row:any, index:number) => (
                   <tr key={index} className="border-b hover:bg-gray-50">
                     <td className="p-2">{`${row.cnpj_basico}/${row.cnpj_ordem}-${row.cnpj_dv}`}</td>
                     <td className="p-2">{row.razao_social}</td>

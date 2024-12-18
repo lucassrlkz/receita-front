@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { estabelecimentoQuery} from '@/database/queries';
+import { estabelecimentoQuery, estabelecimentoQueryCount} from '@/database/queries';
 
 export async function GET() {
   return NextResponse.json(generateFakeData());
@@ -8,10 +8,12 @@ export async function GET() {
 export async function POST(request: Request) {
   const {cnae, estado, cidade} = await request.json();
   
+  const rows = await estabelecimentoQueryCount(cnae, estado, cidade);
   const response = await estabelecimentoQuery(cnae, estado, cidade);
- 
+  
   const results ={
-    results:response
+    results:response,
+    total_rows:rows[0].count
   }
 
   return NextResponse.json(results);

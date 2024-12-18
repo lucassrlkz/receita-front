@@ -4,14 +4,16 @@ import { CnaeFilters } from './cnaeFilters';
 import { CnaeFiltersFormData } from './cnaeZodSchema';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-
+import type { TableDataProps } from './types/form.types';
 
 export function CnaeFormRoot() {
   const router = useRouter();
 
   const [selectedCnae, setSelectedCnae] = useState('');  
   // Add state for table data
-  const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState<
+    TableDataProps
+  >({ total_rows: '0', results: [] });
   
   function handleLogout(){
       sessionStorage.setItem('isAuthenticated', 'false');
@@ -39,7 +41,7 @@ export function CnaeFormRoot() {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
-      setTableData(data.results);
+      setTableData(data);
   };
  
   return (
