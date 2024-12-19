@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormData } from '../utils/login/zodSchema';
+import { useApi } from '@/utils/hooks/fetch';
 
 export default function Home() {
   const router = useRouter()
@@ -19,37 +20,24 @@ export default function Home() {
     resolver: zodResolver(loginSchema)
   })
 
-  const onSubmit = async (data: LoginFormData) => {
+  async function onSubmit(data: LoginFormData) {
     try {
       setIsSubmitting(true);
-      const response = await fetch('/api/login',{
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-  
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-  
-      const validate = await response.json();
+      const validate = await useApi(data, '/api/login','POST');
       
-      if (validate.isAuthenticated === true){
-        sessionStorage.setItem("isAuthenticated", "true");
-        router.push('/form');
-  
-      }else{
+      if (validate.isAuthenticated !== true){
         setError(validate.isAuthenticated as string);
         setIsSubmitting(false);
       }
+      sessionStorage.setItem("isAuthenticated", "true");
+      router.push('/form');
+
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
-      } else {
-        setError('Ocorreu um erro com o servidor. Tente novamente mais tarde.');
-      }
+      } 
+      setError('Ocorreu um erro com o servidor. Tente novamente mais tarde.');
+      
     } finally{
       setIsSubmitting(false);
     }

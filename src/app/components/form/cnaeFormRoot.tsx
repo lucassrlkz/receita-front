@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { useApi } from '@/utils/hooks/fetch';
+
 import { CnaeSelector } from './cnaeSelector';
 import { CnaeFilters } from './cnaeFilters';
 import { CnaeFiltersFormData } from './cnaeZodSchema';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import type { TableDataProps } from './types/form.types';
 
 export function CnaeFormRoot() {
@@ -28,19 +30,8 @@ export function CnaeFormRoot() {
     setSelectedCnae('');
   };
 
-  const handleFilterSubmit = async (filters: CnaeFiltersFormData) => {
-      // const response = await fetch('/api')
-      const response = await fetch('/api', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(filters),
-      });
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-      const data = await response.json();
+  async function handleFilterSubmit(filters: CnaeFiltersFormData){      
+      const data = await useApi(filters, '/api','POST');
       setTableData(data);
   };
  

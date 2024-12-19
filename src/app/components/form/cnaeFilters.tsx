@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cnaeFiltersSchema, CnaeFiltersFormData } from "./cnaeZodSchema";
+import type {StateProps, CityProps, CityByStateProps, TableDataProps} from "./types/form.types";
 
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -15,11 +16,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Popover,PopoverTrigger, PopoverContent} from "@/components/ui/popover";
+import { useApi } from '@/utils/hooks/fetch';
 
 import stateData from "../../../utils/estado.json";
 import cityData from "../../../utils/cidade.json";
 import estadosCidades from "../../../utils/estados-cidades.json";
-import type {StateProps, CityProps, CityByStateProps, TableDataProps} from "./types/form.types";
 
 interface CnaeFiltersProps {
   selectedCnae: string;
@@ -39,8 +40,10 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, ha
   const [openState, setOpenState] = useState(false);
   const [state, setState] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(true);
+  
   const [isFormSubmit, setIsFormSubmit] = useState(false);
-
+  const [exportData, setExportData] = useState<CnaeFiltersFormData>();
+  
   // Initialize the form with react-hook-form and Zod
   const form = useForm<CnaeFiltersFormData>({
     resolver: zodResolver(cnaeFiltersSchema),
@@ -51,9 +54,16 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, ha
     }
   });
 
+  async function handleExportData(data: CnaeFiltersFormData) {
+    const exportData = await useApi(data, "/api/export", "POST");
+
+    console.log(exportData.results[0]);
+  }
+
   // Handle form submission
   function handleSubmit(data: CnaeFiltersFormData){
     onSubmit(data);
+    setExportData(data);
   };
 
   return (
@@ -173,14 +183,20 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, ha
                 Pesquisar
               </Button>
 
+            {exportData && (
               <Button 
-                type="submit" 
+                type="button" 
                 className="w-full"
-                onClick={()=>{alert("exportar dados para arquivo csv"); setIsFormSubmit(false);}}
+                onClick={() => {
+                    handleExportData(exportData);
+                    setIsFormSubmit(false);
+                    setExportData(undefined);
+                }}
                 disabled={!isFormSubmit}
               >
                 Exportar Arquivo CSV
               </Button>
+                )}
               <hr />
               <Button 
                 type="button"
