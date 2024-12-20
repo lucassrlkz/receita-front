@@ -7,6 +7,7 @@ export async function POST(request: Request) {
   const rows = await estabelecimentoQueryCount(cnae, estado, cidade);
   const response = await estabelecimentoQueryLimit(cnae, estado, cidade);
   
+  console.log(rows);
   const results ={
     results:response,
     total_rows:rows[0].count

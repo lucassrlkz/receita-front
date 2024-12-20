@@ -1,7 +1,7 @@
 import sql from "./dbConnection";
 
+let ativa ='02';
 export async function estabelecimentoQueryLimit(cnae:string, estado:string, cidade:string):Promise<any> {
-  const ativa ='02';
   
   return sql`SELECT te.cnpj_basico,t.cnpj_ordem,
     t.cnpj_dv,
@@ -86,18 +86,17 @@ export async function estabelecimentoQueryLimit(cnae:string, estado:string, cida
     LEFT JOIN identificador_socio tidsoc on tidsoc.codigo=tsoc.identificador_socio
     LEFT JOIN faixa_etaria_socio tfes on tfes.codigo=tsoc.faixa_etaria
 
-    WHERE t.cnae_fiscal=${cnae.toString()}
-      AND t.uf=${estado.toString()}
-      AND t.municipio=${cidade.toString()}
-      AND t.situacao_cadastral=${ativa.toString()}
+    WHERE t.cnae_fiscal=${cnae}
+      AND t.uf=${estado}
+      AND t.municipio=${cidade}
+      AND t.situacao_cadastral=${ativa}
     ORDER BY te.razao_social ASC
     LIMIT 5;
   `
 }
 
 export async function queryEstabelecimentos(cnae:string, estado:string, cidade:string):Promise<any> {
-  const ativa ='02';
-  
+
   return sql`SELECT te.cnpj_basico,t.cnpj_ordem,
   t.cnpj_dv,
   te.razao_social,
@@ -181,16 +180,15 @@ export async function queryEstabelecimentos(cnae:string, estado:string, cidade:s
   LEFT JOIN identificador_socio tidsoc on tidsoc.codigo=tsoc.identificador_socio
   LEFT JOIN faixa_etaria_socio tfes on tfes.codigo=tsoc.faixa_etaria
 
-  WHERE t.cnae_fiscal=${cnae.toString()}
-    AND t.uf=${estado.toString()}
-    AND t.municipio=${cidade.toString()}
-    AND t.situacao_cadastral=${ativa.toString()}
+  WHERE t.cnae_fiscal=${cnae}
+    AND t.uf=${estado}
+    AND t.municipio=${cidade}
+    AND t.situacao_cadastral=${ativa}
   ORDER BY te.razao_social ASC;
 `
 }
 
 export async function estabelecimentoQueryCount(cnae:string, estado:string, cidade:string):Promise<any> {
-  const ativa ='02';
   
   return sql`SELECT COUNT(t.cnpj_basico)
 
@@ -216,9 +214,9 @@ export async function estabelecimentoQueryCount(cnae:string, estado:string, cida
     LEFT JOIN identificador_socio tidsoc on tidsoc.codigo=tsoc.identificador_socio
     LEFT JOIN faixa_etaria_socio tfes on tfes.codigo=tsoc.faixa_etaria
 
-    WHERE t.cnae_fiscal=${cnae.toString()}
-      AND t.uf=${estado.toString()}
-      AND t.municipio=${cidade.toString()}
-      AND t.situacao_cadastral=${ativa.toString()};
+    WHERE t.cnae_fiscal=${cnae}
+      AND t.uf=${estado}
+      AND t.municipio=${cidade}
+      AND t.situacao_cadastral=${ativa};
   `
 }
