@@ -16,11 +16,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Popover,PopoverTrigger, PopoverContent} from "@/components/ui/popover";
-import { useApi } from '@/utils/hooks/fetch';
 
-import stateData from "../../../utils/estado.json";
-import cityData from "../../../utils/cidade.json";
-import estadosCidades from "../../../utils/estados-cidades.json";
+import stateData from "@/utils/json/estado.json";
+import cityData from "@/utils/json/cidade.json";
+import estadosCidades from "@/utils/json/estados-cidades.json";
+import downloadFile from '@/utils/downloadFile';
 
 interface CnaeFiltersProps {
   selectedCnae: string;
@@ -40,8 +40,10 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, ha
   const [openState, setOpenState] = useState(false);
   const [state, setState] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(true);
-  
+
+  const [exportingFile, setExportingFile] = useState(false);
   const [isFormSubmit, setIsFormSubmit] = useState(false);
+  
   const [exportData, setExportData] = useState<CnaeFiltersFormData>();
   
   // Initialize the form with react-hook-form and Zod
@@ -55,15 +57,24 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, ha
   });
 
   async function handleExportData(data: CnaeFiltersFormData) {
-    const exportData = await useApi(data, "/api/export", "POST");
+    const response = await fetch('api/download',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    const blob = await response.blob();
 
-    console.log(exportData.results[0]);
+    downloadFile(blob,data);
+    setExportingFile(false);
   }
 
   // Handle form submission
-  function handleSubmit(data: CnaeFiltersFormData){
-    onSubmit(data);
+  async function handleSubmit(data: CnaeFiltersFormData){
+    await onSubmit(data);
     setExportData(data);
+    setIsFormSubmit(false);
   };
 
   return (
@@ -179,24 +190,22 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, ha
               <Button 
                 type="submit" 
                 className="w-full"
-                onClick={() => {setIsFormOpen(!isFormOpen); setIsFormSubmit(true);}}              >
-                Pesquisar
+                onClick={() => {setIsFormSubmit(true);}}              >
+               { isFormSubmit ? 'Carregando...' : 'Pesquisar'}
               </Button>
 
-            {exportData && (
+            {exportData && tableData.results && tableData.results.length > 0 ?(
               <Button 
                 type="button" 
                 className="w-full"
-                onClick={() => {
-                    handleExportData(exportData);
-                    setIsFormSubmit(false);
-                    setExportData(undefined);
+                onClick={async () => {
+                  setExportingFile(!exportingFile);
+                  await handleExportData(exportData);
                 }}
-                disabled={!isFormSubmit}
               >
-                Exportar Arquivo CSV
+                {exportingFile ? 'Exportando...' : 'Exportar Arquivo CSV'}
               </Button>
-                )}
+                ):''}
               <hr />
               <Button 
                 type="button"
@@ -209,6 +218,7 @@ export function CnaeFilters({ selectedCnae, onSubmit, onResetCnae, tableData, ha
                     cidade: ""
                   });
                   setState('');
+                  setExportData(undefined);
                 }}
                 >
                 Limpar Formulário

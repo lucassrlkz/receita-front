@@ -13,7 +13,7 @@ import {
 import { cnaeSchema, CnaeFormData } from "./cnaeZodSchema";
 import {CnaeOptionsProps} from "./types/form.types";
 
-import cnaeData from '../../../utils/cnae.json';
+import cnaeData from '@/utils/json/cnae.json';
 
 interface CnaeSelectorProps {
   onSelectCnae: (cnae: string) => void;
